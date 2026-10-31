@@ -1,9 +1,28 @@
-const BASE_URL = import.meta.env.VITE_API_URL ?? "/api";
+function resolveUrl(endpoint: string): string {
+  if (endpoint.startsWith("http://") || endpoint.startsWith("https://")) {
+    return endpoint;
+  }
+
+  const rawBase = import.meta.env.VITE_API_URL;
+  // Fall back to relative "/api" if VITE_API_URL is unset, empty, or whitespace
+  let base = typeof rawBase === "string" && rawBase.trim() ? rawBase.trim() : "/api";
+
+  // Remove trailing slashes from base URL
+  base = base.replace(/\/+$/, "");
+
+  // Ensure endpoint starts with a leading slash
+  const path = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
+
+  // Prevent duplicate "/api/api/..." if base ends with "/api" and endpoint already begins with "/api/"
+  if (base.endsWith("/api") && path.startsWith("/api/")) {
+    return `${base}${path.slice(4)}`;
+  }
+
+  return `${base}${path}`;
+}
 
 async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-  const url = endpoint.startsWith("http")
-    ? endpoint
-    : `${BASE_URL}${endpoint.startsWith("/") ? "" : "/"}${endpoint}`;
+  const url = resolveUrl(endpoint);
 
   const res = await fetch(url, {
     credentials: "include",
@@ -67,4 +86,3 @@ export function apiPut<T>(endpoint: string, body?: unknown): Promise<T> {
 export function apiDelete<T = unknown>(endpoint: string): Promise<T> {
   return request<T>(endpoint, { method: "DELETE" });
 }
-
