@@ -1,0 +1,9 @@
+# Platform-managed schedules (see .emergent/crons.yml contract).
+crons:
+  - name: daily-billing
+    description: "Runs the recurring billing engine daily at 06:00 UTC: generates due invoices, closes lapsed subscriptions, schedules payment reminders"
+    cron: "0 6 * * *"
+    endpoint: "{{BASE_URL}}/api/cron/billing"
+    method: POST
+    enabled: true
+    # Cron endpoints must ack 2xx immediately; enqueue/background the actual work.
