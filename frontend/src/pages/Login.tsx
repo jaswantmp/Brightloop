@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { apiPost } from "@/lib/api";
+import { useMe } from "@/lib/session";
 import type { UserOut } from "@/lib/types";
 
 export default function Login() {
@@ -14,8 +15,16 @@ export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
   const qc = useQueryClient();
+  const { data: me, isLoading: meLoading } = useMe();
 
   const from = (location.state as { from?: string })?.from || "/";
+
+  // If already authenticated, redirect to destination
+  useEffect(() => {
+    if (me && !meLoading) {
+      navigate(from, { replace: true });
+    }
+  }, [me, meLoading, navigate, from]);
 
   const loginMutation = useMutation({
     mutationFn: () => apiPost<UserOut>("/auth/login", { email, password }),
@@ -133,4 +142,3 @@ export default function Login() {
     </div>
   );
 }
-

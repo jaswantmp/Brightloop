@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -21,12 +22,14 @@ export function ChangePasswordDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
-  const qc = useQueryClient();
   const [current, setCurrent] = useState("");
   const [next, setNext] = useState("");
   const [busy, setBusy] = useState(false);
+  const qc = useQueryClient();
+  const navigate = useNavigate();
 
-  async function submit() {
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
     const err = validatePasswordClient(next);
     if (err) {
       toast.error(err);
@@ -43,7 +46,7 @@ export function ChangePasswordDialog({
       setCurrent("");
       setNext("");
       qc.clear();
-      window.location.href = "/login";
+      navigate("/login", { replace: true });
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Could not change password");
     } finally {
@@ -75,17 +78,27 @@ export function ChangePasswordDialog({
               type="password"
               value={next}
               onChange={(e) => setNext(e.target.value)}
+              placeholder="8+ chars, upper, lower, digit, symbol"
               data-testid="change-password-new-input"
             />
-            <p className="text-xs text-slate-500">
-              At least 9 characters with an uppercase letter, a lowercase letter and a special
-              character.
-            </p>
           </div>
         </div>
         <DialogFooter>
-          <Button onClick={submit} disabled={busy} data-testid="change-password-submit-button">
-            {busy ? "Saving…" : "Change password"}
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            data-testid="change-password-cancel-button"
+          >
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            disabled={busy || !current || !next}
+            onClick={handleSubmit}
+            data-testid="change-password-submit-button"
+          >
+            {busy ? "Updating…" : "Update password"}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, NavLink, useLocation } from "react-router-dom";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   BarChart3,
@@ -138,12 +138,12 @@ function NavLinks({ role, onNavigate }: { role: Role; onNavigate?: () => void })
 
 function Brand() {
   return (
-    <div className="flex items-center gap-2.5 px-5 pt-5 pb-2">
+    <Link to="/" className="flex items-center gap-2.5 px-5 pt-5 pb-2 transition-opacity hover:opacity-90">
       <span className="flex h-8 w-8 items-center justify-center rounded-md bg-slate-900 text-sm font-bold text-white">
         B
       </span>
       <span className="text-base font-semibold tracking-tight text-slate-900">Brightloop</span>
-    </div>
+    </Link>
   );
 }
 
@@ -151,6 +151,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const { data: me } = useMe();
   const qc = useQueryClient();
   const location = useLocation();
+  const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [pwOpen, setPwOpen] = useState(false);
 
@@ -238,7 +239,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 data-testid="menu-logout"
                 onClick={async () => {
                   await endSession(qc);
-                  window.location.href = "/login";
+                  navigate("/login", { replace: true });
                 }}
               >
                 <LogOut className="mr-2 h-4 w-4 text-slate-400" /> Sign out

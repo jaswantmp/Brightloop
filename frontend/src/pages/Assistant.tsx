@@ -72,8 +72,8 @@ export default function Assistant() {
         >
           <p className="font-medium">AI assistant is not configured</p>
           <p className="mt-1 text-xs">
-            Set <span className="font-mono">OPENAI_API_KEY</span> (and optionally{" "}
-            <span className="font-mono">OPENAI_MODEL</span>) in the backend environment to enable
+            Set <span className="font-mono">OPENAI_API_KEY</span> (or{" "}
+            <span className="font-mono">GEMINI_API_KEY</span>) in the backend environment to enable
             it. Nothing is sent anywhere until then.
           </p>
         </div>

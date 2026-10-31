@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { AppShell } from "@/components/AppShell";
 import { RequireRole } from "@/lib/session";
 import Login from "@/pages/Login";
@@ -18,6 +18,7 @@ import Reports from "@/pages/Reports";
 import Assistant from "@/pages/Assistant";
 import Staff from "@/pages/Staff";
 import SettingsPage from "@/pages/Settings";
+import NotFound from "@/pages/NotFound";
 
 const ALL = ["ADMIN", "STAFF", "CUSTOMER"] as const;
 
@@ -178,7 +179,7 @@ export default function App() {
           </RequireRole>
         }
       />
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 }
